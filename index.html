@@ -13,7 +13,7 @@
 <section class="hero"><div style="max-width:900px;margin:auto"><div>PREMIUM HOTEL LINEN LAUNDRY</div><h1>호텔 린넨의 새로운 기준</h1><p>호텔 린넨 전문 세탁 · 상시 수거 및 납품</p><p>24시간 상담</p><a class="btn" href="#inquiry">견적문의하기</a></div></section>
 <section class="container"><h2>JMclean 서비스</h2><div class="cards"><div class="card"><h3>호텔 린넨 세탁</h3><p>호텔 침구 및 타월 등 린넨 전문 세탁 서비스</p></div><div class="card"><h3>상시 수거</h3><p>호텔 운영 일정에 맞춘 수거 상담</p></div><div class="card"><h3>상시 납품</h3><p>호텔 운영에 맞춘 안정적인 납품 상담</p></div></div></section>
 <section class="container" id="inquiry"><h2>온라인 견적문의</h2><p>원하시는 문의 방법을 선택하세요.</p><div class="channels"><label class="choice"><span><input type="radio" name="channel" value="email" checked style="width:auto"> 이메일 견적문의</span></label><label class="choice"><span><input type="radio" name="channel" value="kakao" style="width:auto"> 카카오톡 상담</span></label></div>
-<div id="emailPanel" class="card" style="margin-top:20px"><form id="inquiryForm"><label>업체명 *<input name="company" required maxlength="100" autocomplete="organization"></label><label>담당자명 *<input name="contact" required maxlength="60" autocomplete="name"></label><label>연락처 *<input name="phone" type="tel" required maxlength="30" autocomplete="tel"></label><label>객실 수<input name="rooms" inputmode="numeric" maxlength="10" placeholder="예: 150"></label><label>호텔 주소 *<input name="address" required maxlength="250" autocomplete="street-address"></label><label>문의내용 *<textarea name="message" rows="5" required maxlength="3000"></textarea></label><label style="display:block;font-weight:normal"><input type="checkbox" name="privacy" required style="width:auto"> 견적 상담을 위한 개인정보 수집·이용에 동의합니다. (업체명, 담당자명, 연락처, 객실 수, 호텔 주소, 문의내용 / 이용목적: 견적 상담 및 회신 / 보유기간: 상담 종료 후 1년, 단 법령에 따른 보존 시 해당 기간)</label><input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px"><button class="btn" type="submit">이메일로 문의 접수</button><div class="status" id="status" role="status" aria-live="polite"></div><p class="notice">견적문의가 접수되면 담당자 이메일로 전달됩니다. 전송에 실패하면 전화 또는 카카오톡으로 문의해 주세요.</p></form></div>
+<div id="emailPanel" class="card" style="margin-top:20px"><form id="inquiryForm"><label>업체명<input name="company" maxlength="100" autocomplete="organization"></label><label>담당자명<input name="contact" maxlength="60" autocomplete="name"></label><label>연락처<input name="phone" type="tel" maxlength="30" autocomplete="tel"></label><label>객실 수<input name="rooms" inputmode="numeric" maxlength="10" placeholder="예: 150"></label><label>호텔 주소<input name="address" maxlength="250" autocomplete="street-address"></label><label>문의내용<textarea name="message" rows="5" maxlength="3000"></textarea></label><input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px"><button class="btn" type="submit">이메일로 문의 접수</button><div class="status" id="status" role="status" aria-live="polite"></div><p class="notice">원하는 항목만 작성해 주세요. 답변을 원하시면 연락처를 남겨주세요. 개인정보 처리 안내는 별도 개인정보 처리방침을 확인해 주세요.</p></form></div>
 <div id="kakaoPanel" class="card hidden" style="margin-top:20px"><h3>카카오톡 1:1 상담</h3><p>JMclean 카카오톡 채널로 이동해 상담하실 수 있습니다.</p><a class="btn" href="https://pf.kakao.com/_DtcxeX/chat" target="_blank" rel="noopener noreferrer">카카오톡 상담 시작</a><p class="notice">카카오톡 채널 채팅창이 새 창으로 열립니다.</p></div></section>
 <footer><strong>(주)제이엠클린 | JMclean</strong><p>대표 정주원 · 사업자등록번호 128-87-23471</p><p>경기도 파주시 월롱면 · 010-5656-6963 · wn0504@nate.com</p></footer><a href="https://pf.kakao.com/_DtcxeX/chat" target="_blank" rel="noopener noreferrer" class="float" id="floatingKakao">카카오톡 상담</a>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
@@ -31,15 +31,16 @@ form.addEventListener('submit',async event=>{
  event.preventDefault();
  const status=document.getElementById('status');
  const button=form.querySelector('button[type="submit"]');
- if(!form.reportValidity())return;
+ 
  const data=Object.fromEntries(new FormData(form));
  if(data.website)return;
+ if(![data.company,data.contact,data.phone,data.rooms,data.address,data.message].some(v=>String(v||" ").trim())){status.className="status error";status.style.display="block";status.textContent="문의 내용을 한 항목 이상 입력해 주세요.";return;}
  button.disabled=true;
  status.className='status';status.style.display='block';status.textContent='문의 전송 중입니다.';
  try{
   if(!window.emailjs)throw new Error('이메일 발송 모듈을 불러오지 못했습니다.');
   await emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{
-   company:data.company.trim(),contact:data.contact.trim(),phone:data.phone.trim(),rooms:(data.rooms||'미기재').trim(),address:data.address.trim(),message:data.message.trim()
+   company:(data.company||'').trim()||'미기재',contact:(data.contact||'').trim()||'미기재',phone:(data.phone||'').trim()||'미기재',rooms:(data.rooms||'').trim()||'미기재',address:(data.address||'').trim()||'미기재',message:(data.message||'').trim()||'미기재'
   });
   status.className='status success';status.textContent='견적문의가 정상적으로 전송되었습니다. 빠르게 연락드리겠습니다.';
   form.reset();
